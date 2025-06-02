@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import AuthWrapper from "@/components/auth/AuthWrapper"
 
 interface MeldungData {
   title: string
@@ -171,6 +172,7 @@ export default function MapboxMeldungApp() {
   }
 
   return (
+    <AuthWrapper user={undefined} signOut={undefined}>
     <div className="relative w-full h-screen">
       {/* Map Container */}
       <div ref={mapContainer} className="w-full h-full" />
@@ -348,5 +350,6 @@ export default function MapboxMeldungApp() {
         @import url('https://api.mapbox.com/mapbox-gl-js/v3.0.1/mapbox-gl.css');
       `}</style>
     </div>
+    </AuthWrapper>
   )
 }
