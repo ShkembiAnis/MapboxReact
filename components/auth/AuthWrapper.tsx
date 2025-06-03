@@ -1,3 +1,5 @@
+"use client"
+
 import { createContext, useContext } from 'react';
 import {Amplify} from 'aws-amplify';
 import { updateUserAttributes, fetchUserAttributes } from 'aws-amplify/auth';

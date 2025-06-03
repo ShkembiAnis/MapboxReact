@@ -1,43 +1,45 @@
-"use client"
+"use client";
 
-import { useState, useEffect, useRef, useCallback } from "react"
-import { Plus, X } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import AuthWrapper from "@/components/auth/AuthWrapper"
+import { useState, useEffect, useRef, useCallback } from "react";
+import { Plus, X } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useAuth } from "@/components/auth/AuthWrapper";
+import Profile from "@/components/auth/Profile";
 
 interface MeldungData {
-  title: string
-  category: string
-  subcategory: string
-  description: string
-  examples: string
-  rating: string
+  title: string;
+  category: string;
+  subcategory: string;
+  description: string;
+  examples: string;
+  rating: string;
 }
 
 interface MeldungPoint {
-  id: string
-  longitude: number
-  latitude: number
-  data?: MeldungData
+  id: string;
+  longitude: number;
+  latitude: number;
+  data?: MeldungData;
 }
 
-const MAPBOX_TOKEN = "pk.eyJ1IjoiYW5vamEiLCJhIjoiY203ZXplcTl1MGhqYTJrcjB4N2duOWNmNCJ9.9zUulGIaw0X8lAFidfeWNg"
+const MAPBOX_TOKEN = "pk.eyJ1IjoiYW5vamEiLCJhIjoiY203ZXplcTl1MGhqYTJrcjB4N2duOWNmNCJ9.9zUulGIaw0X8lAFidfeWNg";
 
 export default function MapboxMeldungApp() {
-  const mapContainer = useRef<HTMLDivElement>(null)
-  const map = useRef<any>(null)
-  const markersRef = useRef<any[]>([])
+  const mapContainer = useRef<HTMLDivElement | null>(null);
+  const map = useRef<any>(null);
+  const markersRef = useRef<any[]>([]);
+  const { user, signOut } = useAuth(); // 👈 Access Auth state from context
 
-  const [points, setPoints] = useState<MeldungPoint[]>([])
-  const [selectedPoint, setSelectedPoint] = useState<MeldungPoint | null>(null)
-  const [showDialog, setShowDialog] = useState(false)
-  const [showOverlay, setShowOverlay] = useState(false)
+  const [points, setPoints] = useState<MeldungPoint[]>([]);
+  const [selectedPoint, setSelectedPoint] = useState<MeldungPoint | null>(null);
+  const [showDialog, setShowDialog] = useState(false);
+  const [showOverlay, setShowOverlay] = useState(false);
   const [formData, setFormData] = useState<MeldungData>({
     title: "",
     category: "",
@@ -45,139 +47,107 @@ export default function MapboxMeldungApp() {
     description: "",
     examples: "",
     rating: "",
-  })
+  });
 
-  // Initialize map
+  // 🔥 Reinitialize Mapbox when user logs in or container is ready
   useEffect(() => {
-    if (map.current) return // Initialize map only once
+    if (!user || !mapContainer.current) return;
 
     const initializeMap = async () => {
-      try {
-        // Dynamically import mapbox-gl
-        const mapboxgl = await import("mapbox-gl")
-
-        if (mapContainer.current) {
-          map.current = new mapboxgl.default.Map({
-            container: mapContainer.current,
-            style: "mapbox://styles/mapbox/streets-v12",
-            center: [-97.7431, 30.2672], // Austin, TX
-            zoom: 10,
-            accessToken: MAPBOX_TOKEN,
-          })
-
-          // Add click event listener
-          map.current.on("click", (e: any) => {
-            const { lng, lat } = e.lngLat
-            handleMapClick(lng, lat)
-          })
-        }
-      } catch (error) {
-        console.error("Error loading Mapbox:", error)
+      const mapboxgl = await import("mapbox-gl");
+      if (map.current) {
+        map.current.remove(); // Remove existing map to reinitialize
       }
-    }
+      map.current = new mapboxgl.default.Map({
+        container: mapContainer.current!,
+        style: "mapbox://styles/mapbox/streets-v12",
+        center: [-97.7431, 30.2672],
+        zoom: 10,
+        accessToken: MAPBOX_TOKEN,
+      });
+      map.current.on("click", (e: { lngLat: { lng: any; lat: any; }; }) => {
+        const { lng, lat } = e.lngLat;
+        handleMapClick(lng, lat);
+      });
+    };
 
-    initializeMap()
+    initializeMap();
 
     return () => {
-      if (map.current) {
-        map.current.remove()
-      }
-    }
-  }, [])
+      if (map.current) map.current.remove();
+    };
+  }, [user]);
 
-  // Update markers when points change
+  // 🔥 Update markers when points change
   useEffect(() => {
-    if (!map.current) return
+    if (!map.current) return;
 
-    // Clear existing markers
-    markersRef.current.forEach((marker) => marker.remove())
-    markersRef.current = []
+    markersRef.current.forEach(marker => marker.remove());
+    markersRef.current = [];
 
-    // Add new markers
-    points.forEach((point) => {
-      const markerElement = document.createElement("div")
-      markerElement.className =
-        "w-6 h-6 bg-blue-500 rounded-full border-2 border-white shadow-lg cursor-pointer hover:bg-blue-600 transition-colors"
+    points.forEach(point => {
+      const markerElement = document.createElement("div");
+      markerElement.className = "w-6 h-6 bg-blue-500 rounded-full border-2 border-white shadow-lg cursor-pointer hover:bg-blue-600";
       markerElement.addEventListener("click", (e) => {
-        e.stopPropagation()
-        handleMarkerClick(point)
-      })
+        e.stopPropagation();
+        handleMarkerClick(point);
+      });
 
-      const loadMapbox = async () => {
-        try {
-          const mapboxgl = await import("mapbox-gl")
-          const marker = new mapboxgl.default.Marker(markerElement)
-            .setLngLat([point.longitude, point.latitude])
-            .addTo(map.current)
-
-          markersRef.current.push(marker)
-        } catch (error) {
-          console.error("Error creating marker:", error)
-        }
-      }
-
-      loadMapbox()
-    })
-  }, [points])
+      import("mapbox-gl").then(mapboxgl => {
+        const marker = new mapboxgl.default.Marker(markerElement)
+          .setLngLat([point.longitude, point.latitude])
+          .addTo(map.current);
+        markersRef.current.push(marker);
+      });
+    });
+  }, [points]);
 
   const handleMapClick = useCallback((lng: number, lat: number) => {
     const newPoint: MeldungPoint = {
       id: Date.now().toString(),
       longitude: lng,
       latitude: lat,
-    }
-
-    setPoints((prev) => [...prev, newPoint])
-    setSelectedPoint(newPoint)
-    setShowOverlay(true)
-    setFormData({
-      title: "",
-      category: "",
-      subcategory: "",
-      description: "",
-      examples: "",
-      rating: "",
-    })
-  }, [])
-
+    };
+    setPoints(prev => [...prev, newPoint]);
+    setSelectedPoint(newPoint);
+    setShowOverlay(true);
+    setFormData({ title: "", category: "", subcategory: "", description: "", examples: "", rating: "" });
+  }, []);
   const handleOpenDialog = () => {
     setShowDialog(true)
   }
+  const handleMarkerClick = (point: MeldungPoint) => {
+    setSelectedPoint(point);
+    setShowOverlay(true);
+    if (point.data) setFormData(point.data);
+  };
 
   const handleSaveMeldung = () => {
     if (selectedPoint) {
-      const updatedPoint = {
-        ...selectedPoint,
-        data: formData,
-      }
-
-      setPoints((prev) => prev.map((point) => (point.id === selectedPoint.id ? updatedPoint : point)))
-
-      setSelectedPoint(updatedPoint)
-      setShowDialog(false)
+      const updatedPoint = { ...selectedPoint, data: formData };
+      setPoints(prev => prev.map(p => (p.id === updatedPoint.id ? updatedPoint : p)));
+      setSelectedPoint(updatedPoint);
+      setShowDialog(false);
     }
-  }
+  };
+
 
   const handleCloseOverlay = () => {
     setShowOverlay(false)
     setSelectedPoint(null)
   }
 
-  const handleMarkerClick = (point: MeldungPoint) => {
-    setSelectedPoint(point)
-    setShowOverlay(true)
-    if (point.data) {
-      setFormData(point.data)
-    }
-  }
+
 
   return (
-    <AuthWrapper user={undefined} signOut={undefined}>
     <div className="relative w-full h-screen">
-      {/* Map Container */}
-      <div ref={mapContainer} className="w-full h-full" />
-
-      {/* Overlay */}
+      <div ref={mapContainer}  style={{height:"100%", width:"85%"}} />
+      <div  style={{height:"100%", width:"20%", float:"right", position:"absolute", top:0, right:0, backgroundColor:"grey",borderTopLeftRadius:"10px",borderBottomLeftRadius:"10px", padding:"20px"}}>
+        <Profile />
+      </div>
+      
+      {/* Add your existing overlay and dialog components here */}
+       {/* Overlay */}
       {showOverlay && selectedPoint && (
         <div className="absolute top-4 left-4 z-10">
           <Card className="w-80 shadow-lg">
@@ -344,12 +314,10 @@ export default function MapboxMeldungApp() {
           </div>
         </DialogContent>
       </Dialog>
-
       {/* Mapbox CSS */}
       <style jsx global>{`
         @import url('https://api.mapbox.com/mapbox-gl-js/v3.0.1/mapbox-gl.css');
       `}</style>
     </div>
-    </AuthWrapper>
-  )
+  );
 }
