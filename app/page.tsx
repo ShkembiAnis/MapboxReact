@@ -6,6 +6,7 @@ import { useMapbox } from "@/hooks/useMapbox"
 import { MeldungOverlay } from "@/components/MeldungOverlay"
 import { MeldungDialog } from "@/components/MeldungDialog"
 import { MeldungData, MeldungPoint } from "@/lib/types"
+import Profile from "@/components/auth/Profile"
 
 export default function MapboxMeldungApp() {
   const [points, setPoints] = useState<MeldungPoint[]>([])
@@ -60,11 +61,11 @@ export default function MapboxMeldungApp() {
     }
 
   }
-  const handleMarkerClick = (point: MeldungPoint) => {
-    setSelectedPoint(point);
-    setShowOverlay(true);
-    if (point.data) setFormData(point.data);
-  };
+  // const handleMarkerClick = (point: MeldungPoint) => {
+  //   setSelectedPoint(point);
+  //   setShowOverlay(true);
+  //   if (point.data) setFormData(point.data);
+  // };
 
   const { mapContainer } = useMapbox(handleMapClick, points, handleMarkerClick)
 
