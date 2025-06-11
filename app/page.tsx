@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useCallback } from "react"
@@ -18,13 +19,15 @@ export default function MapboxMeldungApp() {
     description: "",
     examples: "",
     rating: "",
-  })
+  });
+
 
   const handleMapClick = useCallback((lng: number, lat: number) => {
     const newPoint: MeldungPoint = {
       id: Date.now().toString(),
       longitude: lng,
       latitude: lat,
+
     }
 
     setPoints((prev) => [...prev, newPoint])
@@ -55,12 +58,19 @@ export default function MapboxMeldungApp() {
         rating: "",
       })
     }
+
   }
+  const handleMarkerClick = (point: MeldungPoint) => {
+    setSelectedPoint(point);
+    setShowOverlay(true);
+    if (point.data) setFormData(point.data);
+  };
 
   const { mapContainer } = useMapbox(handleMapClick, points, handleMarkerClick)
 
   const handleSaveMeldung = () => {
     if (selectedPoint) {
+
       const updatedPoint = {
         ...selectedPoint,
         data: formData,
@@ -70,7 +80,8 @@ export default function MapboxMeldungApp() {
       setSelectedPoint(updatedPoint)
       setShowDialog(false)
     }
-  }
+  };
+
 
   const handleCloseOverlay = () => {
     setShowOverlay(false)
@@ -87,10 +98,13 @@ export default function MapboxMeldungApp() {
 
   return (
     <div className="relative w-full h-screen">
-      {/* Map Container */}
-      <div ref={mapContainer} className="w-full h-full" />
-
-      {/* Overlay */}
+      <div ref={mapContainer}  style={{height:"100%", width:"85%"}} />
+      <div  style={{height:"100%", width:"20%", float:"right", position:"absolute", top:0, right:0, backgroundColor:"grey",borderTopLeftRadius:"10px",borderBottomLeftRadius:"10px", padding:"20px"}}>
+        <Profile />
+      </div>
+      
+      {/* Add your existing overlay and dialog components here */}
+       {/* Overlay */}
       {showOverlay && selectedPoint && (
         <MeldungOverlay
           selectedPoint={selectedPoint}
@@ -101,6 +115,7 @@ export default function MapboxMeldungApp() {
       )}
 
       {/* Dialog */}
+
       <MeldungDialog
         open={showDialog}
         onOpenChange={setShowDialog}
@@ -109,11 +124,10 @@ export default function MapboxMeldungApp() {
         onFormDataChange={setFormData}
         onSave={handleSaveMeldung}
       />
-
       {/* Mapbox CSS */}
       <style jsx global>{`
         @import url('https://api.mapbox.com/mapbox-gl-js/v3.0.1/mapbox-gl.css');
       `}</style>
     </div>
-  )
+  );
 }

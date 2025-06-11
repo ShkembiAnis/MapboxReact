@@ -1,11 +1,9 @@
-import type { Metadata } from 'next'
-import './globals.css'
 
-export const metadata: Metadata = {
-  title: 'v0 App',
-  description: 'Created with v0',
-  generator: 'v0.dev',
-}
+"user client"
+import './globals.css'
+import AuthWrapper from "@/components/auth/AuthWrapper";
+
+
 
 export default function RootLayout({
   children,
@@ -14,7 +12,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body><AuthWrapper user={undefined} signOut={undefined} > {/* 👈 Context provider */}{children}</AuthWrapper></body>
     </html>
   )
 }

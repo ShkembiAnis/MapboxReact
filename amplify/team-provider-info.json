@@ -1,0 +1,20 @@
+{
+  "dev": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-safestreetauth-dev-74899-authRole",
+      "UnauthRoleArn": "arn:aws:iam::963865443243:role/amplify-safestreetauth-dev-74899-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::963865443243:role/amplify-safestreetauth-dev-74899-authRole",
+      "Region": "eu-north-1",
+      "DeploymentBucketName": "amplify-safestreetauth-dev-74899-deployment",
+      "UnauthRoleName": "amplify-safestreetauth-dev-74899-unauthRole",
+      "StackName": "amplify-safestreetauth-dev-74899",
+      "StackId": "arn:aws:cloudformation:eu-north-1:963865443243:stack/amplify-safestreetauth-dev-74899/8e243e50-3ff6-11f0-8814-0efece37c17d",
+      "AmplifyAppId": "d1ljzhplwe8y2c"
+    },
+    "categories": {
+      "auth": {
+        "safestreetauthafd20c5fafd20c5f": {}
+      }
+    }
+  }
+}

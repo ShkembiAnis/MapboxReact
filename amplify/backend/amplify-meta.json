@@ -1,0 +1,60 @@
+{
+  "providers": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-safestreetauth-dev-74899-authRole",
+      "UnauthRoleArn": "arn:aws:iam::963865443243:role/amplify-safestreetauth-dev-74899-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::963865443243:role/amplify-safestreetauth-dev-74899-authRole",
+      "Region": "eu-north-1",
+      "DeploymentBucketName": "amplify-safestreetauth-dev-74899-deployment",
+      "UnauthRoleName": "amplify-safestreetauth-dev-74899-unauthRole",
+      "StackName": "amplify-safestreetauth-dev-74899",
+      "StackId": "arn:aws:cloudformation:eu-north-1:963865443243:stack/amplify-safestreetauth-dev-74899/8e243e50-3ff6-11f0-8814-0efece37c17d",
+      "AmplifyAppId": "d1ljzhplwe8y2c"
+    }
+  },
+  "auth": {
+    "safestreetauthafd20c5fafd20c5f": {
+      "service": "Cognito",
+      "providerPlugin": "awscloudformation",
+      "dependsOn": [],
+      "customAuth": false,
+      "frontendAuthConfig": {
+        "socialProviders": [],
+        "usernameAttributes": [
+          "EMAIL"
+        ],
+        "signupAttributes": [
+          "EMAIL",
+          "FAMILY_NAME",
+          "GIVEN_NAME",
+          "PHONE_NUMBER"
+        ],
+        "passwordProtectionSettings": {
+          "passwordPolicyMinLength": 8,
+          "passwordPolicyCharacters": []
+        },
+        "mfaConfiguration": "OFF",
+        "mfaTypes": [
+          "SMS"
+        ],
+        "verificationMechanisms": [
+          "EMAIL"
+        ]
+      },
+      "providerMetadata": {
+        "s3TemplateURL": "https://s3.amazonaws.com/amplify-safestreetauth-dev-74899-deployment/amplify-cfn-templates/auth/safestreetauthafd20c5fafd20c5f-cloudformation-template.json",
+        "logicalId": "authsafestreetauthafd20c5fafd20c5f"
+      },
+      "lastPushTimeStamp": "2025-06-02T21:18:31.869Z",
+      "output": {
+        "CreatedSNSRole": "arn:aws:iam::963865443243:role/snsafd20c5f74899-dev",
+        "UserPoolId": "eu-north-1_kw2tGuWF3",
+        "AppClientIDWeb": "picoqlfj3ahkhhjg5165k11t6",
+        "AppClientID": "74i6fqtmvv7h91jg4lrkpk441a",
+        "UserPoolArn": "arn:aws:cognito-idp:eu-north-1:963865443243:userpool/eu-north-1_kw2tGuWF3",
+        "UserPoolName": "safestreetauthafd20c5f_userpool_afd20c5f"
+      },
+      "lastPushDirHash": "yYCrslrWyu9lmITwvxbLrWjW9Ok="
+    }
+  }
+}
